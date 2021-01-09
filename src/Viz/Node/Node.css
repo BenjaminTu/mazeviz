@@ -1,0 +1,56 @@
+.node {
+  width: 25px;
+  height: 25px;
+  outline: 1px solid gray;
+  display: inline-block;
+}
+
+/* .node:hover {
+  transform: scale(0.8);
+} */
+
+.wall {
+  background-color: rgb(38, 87, 143);
+  /* animation: zoom 0.1s; */
+}
+
+.start {
+  background-color: red;
+}
+
+.goal {
+  background-color: green;
+}
+
+.path {
+  background-color: yellow;
+}
+
+.visited {
+  background-color: paleturquoise;
+  animation: fade 0.1s;
+}
+
+@keyframes zoom {
+  0% {
+    transform: scale(0.8);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes fade {
+  0% {
+    background-color: rgb(107, 119, 146);
+  }
+  25% {
+    background-color: rgb(126, 202, 202);
+  }
+  50% {
+    background-color: rgb(109, 201, 201);
+  }
+  100% {
+    background-color: paleturquoise;
+  }
+}
