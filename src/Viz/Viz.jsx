@@ -24,11 +24,9 @@ export default class Viz extends Component {
       start: INITIAL_START,
       goal: INITIAL_GOAL,
       grid: this.initGrid(INITIAL_ROWS, INITIAL_COLS),
-      
+
       // current pathfinding algorithm
-      pathAlgo: function init() {
-        return [[], []];
-      },
+      pathAlgo: "---",
 
       // mouse states
       dragType: Type.Empty,
@@ -113,7 +111,7 @@ export default class Viz extends Component {
         if (curType === Type.Visited || curType === Type.Path) {
           this.setNodeType(r, c, Type.Empty);
         } else if (curType === Type.Wall) {
-          // prevent from reverting to types from previous search 
+          // prevent from reverting to types from previous search
           grid[r][c].prevNodeType = Type.Empty;
         }
       }
@@ -251,12 +249,14 @@ export default class Viz extends Component {
   }
 
   // set pathfinding algorithm
-  setPathAlgo(mode) {
+  setPathAlgo(event) {
+    let mode = event.target.value;
+
     if (!(mode in Algo)) {
       // not a valid algorithm
       return;
     }
-    this.setState({ pathAlgo: Algo[mode] });
+    this.setState({ pathAlgo: mode });
   }
 
   // animate pathfinding algorithms
@@ -267,7 +267,7 @@ export default class Viz extends Component {
     this.clearCache();
 
     // perform search
-    const [path, visitedInOrder] = pathAlgo(
+    const [path, visitedInOrder] = Algo[pathAlgo](
       grid,
       grid[start.r][start.c],
       grid[goal.r][goal.c]
@@ -305,7 +305,7 @@ export default class Viz extends Component {
   // animate maze generation
   generateMaze() {
     const { grid, start, animationSpeed } = this.state;
-    
+
     let pathNodesInOrder = [];
     backtrack(grid, grid[start.r][start.c], pathNodesInOrder);
 
@@ -353,10 +353,18 @@ export default class Viz extends Component {
       <>
         <div className="panel">
           <button onClick={() => this.clearBoard()}> Clear Board </button>
-          <button onClick={() => this.setPathAlgo("DFS")}>DFS</button>
-          <button onClick={() => this.setPathAlgo("BFS")}>BFS</button>
-          <button onClick={() => this.setPathAlgo("Dijkstra")}>Dijkstra</button>
-          <button onClick={() => this.setPathAlgo("A*")}>A*</button>
+          <div className="algorithm-select">
+            <label for="select">Choose your pathfinding algorithm!</label>
+            <div>
+              <select id="select" onChange={(e) => this.setPathAlgo(e)}>
+                {Object.keys(Algo).map((option, index) => (
+                  <option key={index} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
           <button onClick={() => this.animateSearch()}>Animate</button>
           <button onClick={() => this.generateMaze()}>Maze</button>
         </div>

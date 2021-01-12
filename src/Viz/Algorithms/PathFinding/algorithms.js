@@ -5,8 +5,11 @@ import { aStar } from "./aStar";
 
 // Algorithm selector
 export const Algo = {
-    "DFS": dfs,
-    "BFS": bfs,
-    "Dijkstra": dijkstra,
-    "A*": aStar,
-  };
+  "---": function init() {
+    return [[], []];
+  },
+  "A*": aStar,
+  "BFS": bfs,
+  "DFS": dfs,
+  "Dijkstra": dijkstra,
+};
