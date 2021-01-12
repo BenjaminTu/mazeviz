@@ -1,5 +1,6 @@
 import * as utils from "../utilities";
 
+// Path Finding with Depth First Search 
 export function dfs(grid, start, goal) {
   var stk = [];
   var visitedInOrder = [];
@@ -19,6 +20,7 @@ export function dfs(grid, start, goal) {
       return [path, visitedInOrder];
     }
 
+    // push to stack for every not-yet-visited neighbor
     let neighbors = utils.getNeighbors(grid, node);
     for (let i = 0; i < neighbors.length; i++) {
       let neighbor = neighbors[i];
@@ -29,5 +31,7 @@ export function dfs(grid, start, goal) {
       }
     }
   }
+
+  // no path found
   return [[], visitedInOrder];
 }

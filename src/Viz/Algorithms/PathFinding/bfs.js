@@ -1,5 +1,6 @@
 import * as utils from "../utilities";
 
+// Path finding with Breadth First Search
 export function bfs(grid, start, goal) {
   var q = [];
   var visitedInOrder = [];
@@ -19,6 +20,7 @@ export function bfs(grid, start, goal) {
       return [path, visitedInOrder];
     }
 
+    // push to queue for every not-yet-visited neighbor
     let neighbors = utils.getNeighbors(grid, node);
     for (let i = 0; i < neighbors.length; i++) {
       let neighbor = neighbors[i];
@@ -29,5 +31,7 @@ export function bfs(grid, start, goal) {
       }
     }
   }
+
+  // no path found
   return [[], visitedInOrder];
 }

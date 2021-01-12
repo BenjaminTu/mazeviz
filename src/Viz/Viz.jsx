@@ -2,10 +2,11 @@ import React, { Component } from "react";
 import Node from "./Node/Node";
 import { Type } from "./Algorithms/utilities";
 import { Algo } from "./Algorithms/PathFinding/algorithms";
-
 import { backtrack } from "./Algorithms/Maze/backtrack";
 
 import "./Viz.css";
+
+// Constants
 
 const INITIAL_ROWS = 27;
 const INITIAL_COLS = 53;
@@ -14,27 +15,34 @@ const INITIAL_START = { r: 10, c: 10 };
 const INITIAL_GOAL = { r: 10, c: 43 };
 
 const ANIMATION_SPEED = 20;
-const MAZE_SPEED = 20;
 
 export default class Viz extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      // grid state
       start: INITIAL_START,
       goal: INITIAL_GOAL,
       grid: this.initGrid(INITIAL_ROWS, INITIAL_COLS),
-      curAlgo: function init() {
+      
+      // current pathfinding algorithm
+      pathAlgo: function init() {
         return [[], []];
       },
+
+      // mouse states
       dragType: Type.Empty,
       disabled: false,
       mouseIsPressed: false,
+
+      // current animation speed
       animationSpeed: ANIMATION_SPEED,
     };
   }
 
   /* Grid Functions */
 
+  // initial grid functions
   initGrid(rows, cols) {
     const grid = [];
     for (let row = 0; row < rows; row++) {
@@ -48,6 +56,7 @@ export default class Viz extends Component {
           assignType = Type.Goal;
         }
 
+        // initial node properties
         let node = {
           row: row,
           col: col,
@@ -67,7 +76,8 @@ export default class Viz extends Component {
     return grid;
   }
 
-  clearWall() {
+  // clear all the wall/visited/path nodes
+  clearBoard() {
     const { grid } = this.state;
     for (let r = 0; r < grid.length; r++) {
       for (let c = 0; c < grid[r].length; c++) {
@@ -75,6 +85,35 @@ export default class Viz extends Component {
         if (curType !== Type.Start && curType !== Type.Goal) {
           this.setNodeType(r, c, Type.Empty);
         } else {
+          // prevent from start/goal reverting to anything other than empty nodes
+          grid[r][c].prevNodeType = Type.Empty;
+        }
+      }
+    }
+
+    this.setState(grid);
+  }
+
+  // clear node caches before starting next search/animation
+  clearCache() {
+    const { grid } = this.state;
+    for (let r = 0; r < grid.length; r++) {
+      for (let c = 0; c < grid[0].length; c++) {
+        // clear data
+        grid[r][c].visited = false;
+        grid[r][c].opened = false;
+        grid[r][c].closed = false;
+
+        grid[r][c].distance = Infinity;
+        grid[r][c].f = Infinity;
+
+        let curType = grid[r][c].nodeType;
+
+        // clear visited cache
+        if (curType === Type.Visited || curType === Type.Path) {
+          this.setNodeType(r, c, Type.Empty);
+        } else if (curType === Type.Wall) {
+          // prevent from reverting to types from previous search 
           grid[r][c].prevNodeType = Type.Empty;
         }
       }
@@ -85,6 +124,7 @@ export default class Viz extends Component {
 
   /* Node Functions */
 
+  // set node given type, set current type to previous type accordingly
   setNodeType(row, col, assignType) {
     const { grid } = this.state;
     if (grid[row][col].nodeType !== assignType) {
@@ -93,12 +133,15 @@ export default class Viz extends Component {
     grid[row][col].nodeType = assignType;
   }
 
+  // revert node type to its previous  type
   revertNodeType(row, col) {
     const { grid } = this.state;
     grid[row][col].nodeType = grid[row][col].prevNodeType;
   }
+
   /* Mouse Events */
 
+  // mouse down event
   handleMouseDown(row, col) {
     const { grid, disabled } = this.state;
 
@@ -112,9 +155,11 @@ export default class Viz extends Component {
       case Type.Empty:
       case Type.Visited:
       case Type.Path:
+        // set empty/visited/path nodes to wall
         this.setNodeType(row, col, Type.Wall);
         break;
       case Type.Wall:
+        // revert wall nodes to previous type
         this.revertNodeType(row, col);
         break;
       default:
@@ -128,8 +173,7 @@ export default class Viz extends Component {
     });
   }
 
-  // Mouse Hover
-  // TODO: Bug when clear walls after animation
+  // mouse hover event
   handleMouseEnter(row, col) {
     const {
       grid,
@@ -150,16 +194,19 @@ export default class Viz extends Component {
       case Type.Empty:
       case Type.Visited:
       case Type.Path:
+        // set empty/visited/path nodes to wall
         if (curType !== Type.Start && curType !== Type.Goal) {
           this.setNodeType(row, col, Type.Wall);
         }
         break;
       case Type.Wall:
+        // revert to previous types
         if (curType === Type.Wall) {
           this.revertNodeType(row, col);
         }
         break;
       case Type.Start:
+        // move start and revert previous start
         if (curType !== Type.Wall && curType !== Type.Goal) {
           this.revertNodeType(start.r, start.c);
           this.setNodeType(row, col, Type.Start);
@@ -167,6 +214,7 @@ export default class Viz extends Component {
         }
         break;
       case Type.Goal:
+        // move goal and revert previous goal
         if (curType !== Type.Wall && curType !== Type.Start) {
           this.revertNodeType(goal.r, goal.c);
           this.setNodeType(row, col, Type.Goal);
@@ -179,18 +227,21 @@ export default class Viz extends Component {
     this.setState(grid);
   }
 
+  // mouse up event
   handleMouseUp() {
     this.setState({ mouseIsPressed: false });
   }
 
-  /* Path Finding Algorithm Functions */
+  /* Pathfinding Algorithm Functions */
 
+  // disable all inputs
   disableInput() {
     var elements = document.querySelectorAll("button, input");
     elements.forEach((element) => (element.disabled = true));
     this.setState({ disabled: true });
   }
 
+  // enable all inputs after given time(ms)
   enableInput(time) {
     setTimeout(() => {
       var elements = document.querySelectorAll("button, input");
@@ -199,52 +250,39 @@ export default class Viz extends Component {
     }, time);
   }
 
-  clearCache() {
-    const { grid } = this.state;
-    for (let r = 0; r < grid.length; r++) {
-      for (let c = 0; c < grid[0].length; c++) {
-        grid[r][c].visited = false;
-        grid[r][c].opened = false;
-        grid[r][c].closed = false;
-
-        grid[r][c].distance = Infinity;
-        grid[r][c].f = Infinity;
-
-        let curType = grid[r][c].nodeType;
-
-        // clear visited cache
-        if (curType === Type.Visited || curType === Type.Path) {
-          grid[r][c].nodeType = Type.Empty;
-        }
-      }
-    }
-  }
-
-  setAlgo(mode) {
+  // set pathfinding algorithm
+  setPathAlgo(mode) {
     if (!(mode in Algo)) {
       // not a valid algorithm
       return;
     }
-    this.setState({ curAlgo: Algo[mode] });
+    this.setState({ pathAlgo: Algo[mode] });
   }
 
+  // animate pathfinding algorithms
   animateSearch() {
-    const { grid, start, goal, curAlgo, animationSpeed } = this.state;
+    const { grid, start, goal, pathAlgo, animationSpeed } = this.state;
 
+    // clear cache
     this.clearCache();
-    const [path, visitedInOrder] = curAlgo(
+
+    // perform search
+    const [path, visitedInOrder] = pathAlgo(
       grid,
       grid[start.r][start.c],
       grid[goal.r][goal.c]
     );
 
+    // disable input during animation
     this.disableInput();
 
+    // concatenate all nodes to animate
     const nodesToAnimate = visitedInOrder.concat(path);
 
     for (let i = 0; i < nodesToAnimate.length; i++) {
       let node = nodesToAnimate[i];
       if (node.nodeType === Type.Start || node.nodeType === Type.Goal) {
+        // set start/goal nodes previous type to path for indicate path when moving start/goal
         node.prevNodeType = Type.Path;
         continue;
       }
@@ -253,26 +291,31 @@ export default class Viz extends Component {
       setTimeout(() => {
         node.nodeType = assignType;
 
-        // force update for animation
+        // set state for new render (force animation)
         this.setState({ grid });
       }, animationSpeed * i);
     }
 
-    // enable interactive elements after animation
+    // enable input after animation
     this.enableInput(animationSpeed * nodesToAnimate.length);
   }
 
   /* Maze Functions */
 
+  // animate maze generation
   generateMaze() {
     const { grid, start, animationSpeed } = this.state;
+    
     let pathNodesInOrder = [];
     backtrack(grid, grid[start.r][start.c], pathNodesInOrder);
 
+    // clear all cache
     this.clearCache();
 
+    // disable input during animation
     this.disableInput();
 
+    // set all cells to wall
     for (let r = 0; r < grid.length; r++) {
       for (let c = 0; c < grid[0].length; c++) {
         let curType = grid[r][c].nodeType;
@@ -282,8 +325,10 @@ export default class Viz extends Component {
       }
     }
 
+    // force render
     this.setState({ grid });
 
+    // animation maze
     for (let i = 0; i < pathNodesInOrder.length; i++) {
       let node = pathNodesInOrder[i];
       if (node.nodeType === Type.Start || node.nodeType === Type.Goal) {
@@ -291,27 +336,27 @@ export default class Viz extends Component {
       }
       setTimeout(() => {
         node.nodeType = Type.Empty;
-        // force update for animation
+        // set state for new render (force animation)
         this.setState({ grid });
-      }, MAZE_SPEED * i);
+      }, animationSpeed * i);
     }
-    this.enableInput(MAZE_SPEED * pathNodesInOrder.length);
+
+    // enable input after animation
+    this.enableInput(animationSpeed * pathNodesInOrder.length);
   }
 
   /* Render */
 
   render() {
     const { grid, start, goal } = this.state;
-    // console.log("start is at " + start.r + " " + start.c);
-    // console.log("goal is at " + goal.r + " " + goal.c);
     return (
       <>
         <div className="panel">
-          <button onClick={() => this.clearWall()}> Clear Walls </button>
-          <button onClick={() => this.setAlgo("DFS")}>DFS</button>
-          <button onClick={() => this.setAlgo("BFS")}>BFS</button>
-          <button onClick={() => this.setAlgo("Dijkstra")}>Dijkstra</button>
-          <button onClick={() => this.setAlgo("A*")}>A*</button>
+          <button onClick={() => this.clearBoard()}> Clear Board </button>
+          <button onClick={() => this.setPathAlgo("DFS")}>DFS</button>
+          <button onClick={() => this.setPathAlgo("BFS")}>BFS</button>
+          <button onClick={() => this.setPathAlgo("Dijkstra")}>Dijkstra</button>
+          <button onClick={() => this.setPathAlgo("A*")}>A*</button>
           <button onClick={() => this.animateSearch()}>Animate</button>
           <button onClick={() => this.generateMaze()}>Maze</button>
         </div>

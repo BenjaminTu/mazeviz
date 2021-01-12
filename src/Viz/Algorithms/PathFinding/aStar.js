@@ -1,11 +1,14 @@
 import * as utils from "../utilities";
 
+// Path finding with A*
 export function aStar(
   grid,
   start,
   goal,
+  // default heuristic function for astar
   heuristic = (a, b) => Math.abs(a.row - b.row) + Math.abs(a.col - b.col)
 ) {
+  // custom node comparator for heap
   function comparator(a, b) {
     if (isNaN(a.f - b.f)) {
       return 0;
@@ -14,6 +17,7 @@ export function aStar(
     }
   }
 
+  // custom hash value for node
   function key(node) {
     return "".concat(node.row, " ", node.col);
   }
@@ -21,6 +25,7 @@ export function aStar(
   var open = new utils.PriorityQueue(comparator);
   var visitedInOrder = [];
 
+  // (K, V) => (node, path to node from start)
   var dict = {};
 
   start.distance = 0;
@@ -35,7 +40,7 @@ export function aStar(
 
     visitedInOrder.push(node);
     if (node === goal) {
-      // return path
+      // return path and visited nodes
       return [dict[key(node)], visitedInOrder];
     }
 
@@ -47,11 +52,15 @@ export function aStar(
         continue;
       }
 
+      // 1 for no diagonal, 1.4 for diagonal
       let newDistance = node.distance + 1;
 
+      // if not processed or should be updated
       if (!neighbor.opened || newDistance < neighbor.distance) {
         neighbor.distance = newDistance;
         neighbor.f = neighbor.distance + heuristic(neighbor, goal);
+
+        // push new path to hash table
         dict[key(neighbor)] = dict[key(node)].slice();
         dict[key(neighbor)].push(neighbor);
 
@@ -59,10 +68,13 @@ export function aStar(
           open.add(neighbor);
           neighbor.opened = true;
         } else {
+          // update because we've updated f value
           open.updateItem(neighbor);
         }
       }
     }
   }
+
+  // no path found
   return [[], visitedInOrder];
 }

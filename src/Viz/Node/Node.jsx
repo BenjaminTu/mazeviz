@@ -14,8 +14,9 @@ export default class Node extends Component {
 
     return (
       <div
+        // render by type
         className={"node".concat(" ", nodeType).trim()}
-        id={"node-".concat(row, "-", col)}
+        // mouse event functions
         onMouseDown={() => onMouseDown(row, col)}
         onMouseEnter={() => onMouseEnter(row, col)}
         onMouseUp={() => onMouseUp()}
