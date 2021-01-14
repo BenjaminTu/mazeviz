@@ -356,7 +356,9 @@ export default class Viz extends Component {
     }
 
     // enable input after animation
-    this.enableInput(animationSpeed * pathNodesInOrder.length);
+    setTimeout(() => {
+      this.enableInput();
+    }, animationSpeed * pathNodesInOrder.length);
   }
 
   /* Render */
