@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/mazeviz/static/css/main.59bd289c.chunk.css",
-    "main.js": "/mazeviz/static/js/main.ca87ad69.chunk.js",
-    "main.js.map": "/mazeviz/static/js/main.ca87ad69.chunk.js.map",
+    "main.js": "/mazeviz/static/js/main.1e4cfb98.chunk.js",
+    "main.js.map": "/mazeviz/static/js/main.1e4cfb98.chunk.js.map",
     "runtime-main.js": "/mazeviz/static/js/runtime-main.0b7f80cb.js",
     "runtime-main.js.map": "/mazeviz/static/js/runtime-main.0b7f80cb.js.map",
     "static/js/2.c02a0d15.chunk.js": "/mazeviz/static/js/2.c02a0d15.chunk.js",
@@ -17,6 +17,6 @@
     "static/js/runtime-main.0b7f80cb.js",
     "static/js/2.c02a0d15.chunk.js",
     "static/css/main.59bd289c.chunk.css",
-    "static/js/main.ca87ad69.chunk.js"
+    "static/js/main.1e4cfb98.chunk.js"
   ]
 }
