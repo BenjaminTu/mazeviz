@@ -41,6 +41,11 @@ export default class Viz extends Component {
     };
   }
 
+  // Tab Name
+  componentDidMount() {
+    document.title = "Path Visualizer";
+  }
+
   /* Grid Functions */
 
   // initial grid functions
@@ -363,7 +368,11 @@ export default class Viz extends Component {
       <>
         <div className="panel">
           <button onClick={() => this.clearBoard()}> Clear Board </button>
-          <input type="checkbox" id="checkbox" onChange={(e) => this.setDiag(e)}></input>
+          <input
+            type="checkbox"
+            id="checkbox"
+            onChange={(e) => this.setDiag(e)}
+          ></input>
           <label htmlFor="checkbox">Allow Diagonal Movements</label>
           <select id="select" onChange={(e) => this.setPathAlgo(e)}>
             {Object.keys(Algo).map((option, index) => (
