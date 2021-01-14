@@ -3,7 +3,7 @@ import { bfs } from "./bfs.js";
 import { dijkstra } from "./dijkstra.js";
 import { aStar } from "./aStar";
 
-// Algorithm selector
+// Pathfinding algorithm selector
 export const Algo = {
   "---": function init() {
     return [[], []];

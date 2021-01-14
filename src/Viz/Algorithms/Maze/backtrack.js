@@ -1,11 +1,11 @@
-import { Type, directions, shuffle } from "../utilities";
+import { Type, directionsNoDiag, shuffle } from "../utilities";
 
 // maze generator with recursive bcktracking
 export function backtrack(grid, node, pathNodesInOrder) {
   const rows = grid.length;
   const cols = grid[0].length;
 
-  let randDirections = directions.slice();
+  let randDirections = directionsNoDiag.slice();
 
   shuffle(randDirections);
   node.visited = true;

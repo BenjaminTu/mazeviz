@@ -1,10 +1,11 @@
 import * as utils from "../utilities";
 
-// Path finding with A*
+// Pathfinding with A*
 export function aStar(
   grid,
   start,
   goal,
+  diag,
   // default heuristic function for astar
   heuristic = (a, b) => Math.abs(a.row - b.row) + Math.abs(a.col - b.col)
 ) {
@@ -44,7 +45,7 @@ export function aStar(
       return [dict[key(node)], visitedInOrder];
     }
 
-    let neighbors = utils.getNeighbors(grid, node);
+    let neighbors = utils.getNeighbors(grid, node, diag);
     for (let i = 0; i < neighbors.length; i++) {
       let neighbor = neighbors[i];
 
@@ -53,7 +54,7 @@ export function aStar(
       }
 
       // 1 for no diagonal, 1.4 for diagonal
-      let newDistance = node.distance + 1;
+      let newDistance = node.distance + diag? 1 : 1.4;
 
       // if not processed or should be updated
       if (!neighbor.opened || newDistance < neighbor.distance) {

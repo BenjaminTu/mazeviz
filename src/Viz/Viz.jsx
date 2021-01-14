@@ -28,6 +28,9 @@ export default class Viz extends Component {
       // current pathfinding algorithm
       pathAlgo: "---",
 
+      // diagonal movement
+      diag: false,
+
       // mouse states
       dragType: Type.Empty,
       disabled: false,
@@ -248,6 +251,11 @@ export default class Viz extends Component {
     }, time);
   }
 
+  // set diagonal movement
+  setDiag(event) {
+    this.setState({ diag: event.target.checked });
+  }
+
   // set pathfinding algorithm
   setPathAlgo(event) {
     let mode = event.target.value;
@@ -261,7 +269,7 @@ export default class Viz extends Component {
 
   // animate pathfinding algorithms
   animateSearch() {
-    const { grid, start, goal, pathAlgo, animationSpeed } = this.state;
+    const { grid, start, goal, pathAlgo, diag, animationSpeed } = this.state;
 
     // clear cache
     this.clearCache();
@@ -270,7 +278,8 @@ export default class Viz extends Component {
     const [path, visitedInOrder] = Algo[pathAlgo](
       grid,
       grid[start.r][start.c],
-      grid[goal.r][goal.c]
+      grid[goal.r][goal.c], 
+      diag
     );
 
     // disable input during animation
@@ -348,25 +357,23 @@ export default class Viz extends Component {
   /* Render */
 
   render() {
-    const { grid, start, goal } = this.state;
+    const { grid } = this.state;
+
     return (
       <>
         <div className="panel">
           <button onClick={() => this.clearBoard()}> Clear Board </button>
-          <div className="algorithm-select">
-            <label for="select">Choose your pathfinding algorithm!</label>
-            <div>
-              <select id="select" onChange={(e) => this.setPathAlgo(e)}>
-                {Object.keys(Algo).map((option, index) => (
-                  <option key={index} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <button onClick={() => this.animateSearch()}>Animate</button>
-          <button onClick={() => this.generateMaze()}>Maze</button>
+          <input type="checkbox" onChange={(e) => this.setDiag(e)}></input>
+          <label>Allow Diagonal Movements</label>
+          <select id="select" onChange={(e) => this.setPathAlgo(e)}>
+            {Object.keys(Algo).map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+          <button onClick={() => this.animateSearch()}>Start Search</button>
+          <button onClick={() => this.generateMaze()}>Generate Maze</button>
         </div>
 
         <div className="grid">

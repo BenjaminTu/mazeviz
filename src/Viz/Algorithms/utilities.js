@@ -8,19 +8,26 @@ export const Type = {
   Path: "path",
 };
 
-// grid directions
-export const directions = [
+// grid directions with no diagonals
+export const directionsNoDiag = [
+  [0, -1], // left
+  [1, 0], // down
+  [0, 1], // right
+  [-1, 0], // up
+];
+
+// grid directions with diagonals
+export const directionsWithDiag = [
   [0, -1], // left
   [1, 0], // down
   [0, 1], // right
   [-1, 0], // up
   // diagonal
-  // [1, 1],
-  // [1, -1],
-  // [-1, -1],
-  // [-1, 1]
+  [1, 1], // bottom right
+  [1, -1], // up right
+  [-1, -1], // up left
+  [-1, 1], // bottom left
 ];
-
 // shuffle an array (for randomizing directions)
 export function shuffle(array) {
   let rand, temp, cur;
@@ -32,14 +39,15 @@ export function shuffle(array) {
   }
 }
 
-// get neighbors given cell (ignores wall)
-export function getNeighbors(grid, node) {
+// get neighbors given cell and diagonal movement boolean(ignores wall)
+export function getNeighbors(grid, node, diag) {
   if (!grid.length) {
     return [];
   }
 
   const rows = grid.length;
   const cols = grid[0].length;
+  const directions = diag ? directionsWithDiag : directionsNoDiag;
 
   let neighbors = [];
   for (let i = 0; i < directions.length; i++) {
@@ -62,7 +70,7 @@ export function getNeighbors(grid, node) {
 
 // A custom min/max heap (given comparator)
 export class PriorityQueue {
-  constructor(comparator = (a, b) => a > b) {
+  constructor(comparator = (a, b) => a - b) {
     this.heap = [];
     this._comparator = comparator;
   }
