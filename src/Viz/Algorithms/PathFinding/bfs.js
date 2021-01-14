@@ -1,4 +1,4 @@
-import * as utils from "../utilities";
+import {getNeighbors} from "../utilities";
 
 // Pathfinding with Breadth First Search
 export function bfs(grid, start, goal, diag) {
@@ -21,7 +21,7 @@ export function bfs(grid, start, goal, diag) {
     }
 
     // push to queue for every not-yet-visited neighbor
-    let neighbors = utils.getNeighbors(grid, node, diag);
+    let neighbors = getNeighbors(grid, node, diag);
     for (let i = 0; i < neighbors.length; i++) {
       let neighbor = neighbors[i];
       if (!neighbor.visited) {

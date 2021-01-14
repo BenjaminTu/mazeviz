@@ -109,11 +109,7 @@ export class PriorityQueue {
 
   // remove and return the min/max of the heap (return null if empty)
   poll() {
-    if (this.size() === 0) {
-      return null;
-    }
-
-    if (this.size() === 1) {
+    if (this.size() <= 1) {
       return this.heap.pop();
     }
 
@@ -142,29 +138,34 @@ export class PriorityQueue {
       // both children
       let left = 2 * idx + 1;
       let right = 2 * idx + 2;
-      let swap = idx;
+      let smallest = idx;
 
-      // Sink down if parent is greater than children
+      // Sink down with the smallest children
       if (
         left < this.size() &&
         this._comparator(this.heap[idx], this.heap[left]) > 0
       ) {
-        swap = left;
-      } else if (
+        smallest = left;
+      }
+
+      if (
         right < this.size() &&
-        this._comparator(this.heap[idx], this.heap[right]) > 0
+        this._comparator(this.heap[smallest], this.heap[right]) > 0
       ) {
-        swap = right;
-      } else {
+        smallest = right;
+      }
+
+      // if current node is the smallest, done
+      if (smallest === idx) {
         return;
       }
 
       // swap
       let temp = this.heap[idx];
-      this.heap[idx] = this.heap[swap];
-      this.heap[swap] = temp;
+      this.heap[idx] = this.heap[smallest];
+      this.heap[smallest] = temp;
 
-      idx = swap;
+      idx = smallest;
     }
   }
 

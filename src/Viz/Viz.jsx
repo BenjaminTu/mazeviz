@@ -9,7 +9,7 @@ import "./Viz.css";
 // Constants
 
 const INITIAL_ROWS = 27;
-const INITIAL_COLS = 53;
+const INITIAL_COLS = 51;
 
 const INITIAL_START = { r: 10, c: 10 };
 const INITIAL_GOAL = { r: 10, c: 43 };
@@ -242,13 +242,11 @@ export default class Viz extends Component {
     this.setState({ disabled: true });
   }
 
-  // enable all inputs after given time(ms)
-  enableInput(time) {
-    setTimeout(() => {
-      var elements = document.querySelectorAll("button, input");
-      elements.forEach((element) => (element.disabled = false));
-      this.setState({ disabled: false });
-    }, time);
+  // enable all inputs
+  enableInput() {
+    var elements = document.querySelectorAll("button, input");
+    elements.forEach((element) => (element.disabled = false));
+    this.setState({ disabled: false });
   }
 
   // set diagonal movement
@@ -278,7 +276,7 @@ export default class Viz extends Component {
     const [path, visitedInOrder] = Algo[pathAlgo](
       grid,
       grid[start.r][start.c],
-      grid[goal.r][goal.c], 
+      grid[goal.r][goal.c],
       diag
     );
 
@@ -306,7 +304,9 @@ export default class Viz extends Component {
     }
 
     // enable input after animation
-    this.enableInput(animationSpeed * nodesToAnimate.length);
+    setTimeout(() => {
+      this.enableInput();
+    }, animationSpeed * nodesToAnimate.length);
   }
 
   /* Maze Functions */
@@ -363,8 +363,8 @@ export default class Viz extends Component {
       <>
         <div className="panel">
           <button onClick={() => this.clearBoard()}> Clear Board </button>
-          <input type="checkbox" onChange={(e) => this.setDiag(e)}></input>
-          <label>Allow Diagonal Movements</label>
+          <input type="checkbox" id="checkbox" onChange={(e) => this.setDiag(e)}></input>
+          <label htmlFor="checkbox">Allow Diagonal Movements</label>
           <select id="select" onChange={(e) => this.setPathAlgo(e)}>
             {Object.keys(Algo).map((option, index) => (
               <option key={index} value={option}>

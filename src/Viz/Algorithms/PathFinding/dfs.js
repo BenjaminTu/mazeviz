@@ -1,4 +1,4 @@
-import * as utils from "../utilities";
+import {getNeighbors} from "../utilities";
 
 // Pathfinding with Depth First Search 
 export function dfs(grid, start, goal, diag) {
@@ -21,7 +21,7 @@ export function dfs(grid, start, goal, diag) {
     }
 
     // push to stack for every not-yet-visited neighbor
-    let neighbors = utils.getNeighbors(grid, node, diag);
+    let neighbors = getNeighbors(grid, node, diag);
     for (let i = 0; i < neighbors.length; i++) {
       let neighbor = neighbors[i];
       if (!neighbor.visited) {

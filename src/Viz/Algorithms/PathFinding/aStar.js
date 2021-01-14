@@ -1,20 +1,26 @@
-import * as utils from "../utilities";
+import {getNeighbors, PriorityQueue} from "../utilities";
 
 // Pathfinding with A*
-export function aStar(
-  grid,
-  start,
-  goal,
-  diag,
-  // default heuristic function for astar
-  heuristic = (a, b) => Math.abs(a.row - b.row) + Math.abs(a.col - b.col)
-) {
-  // custom node comparator for heap
-  function comparator(a, b) {
-    if (isNaN(a.f - b.f)) {
-      return 0;
+export function aStar(grid, start, goal, diag, heuristic) {
+
+  // if heuristic function is not provided
+  if (heuristic === undefined) {
+    if (diag) {
+      // octile distance for diagonal movements
+      heuristic = function (a, b) {
+        let dx = Math.abs(a.row - b.row);
+        let dy = Math.abs(a.col - b.col);
+
+        return 1 * (dx + dy) + (Math.SQRT2 - 2 * 1) * Math.min(dx, dy);
+      };
     } else {
-      return a.f - b.f;
+      // manhattan distance for non-diagonal movements
+      heuristic = function (a, b) {
+        let dx = Math.abs(a.row - b.row);
+        let dy = Math.abs(a.col - b.col);
+
+        return dx + dy;
+      };
     }
   }
 
@@ -23,7 +29,11 @@ export function aStar(
     return "".concat(node.row, " ", node.col);
   }
 
-  var open = new utils.PriorityQueue(comparator);
+  console.log(heuristic);
+
+  var open = new PriorityQueue((a, b) => {
+    return a.f - b.f;
+  });
   var visitedInOrder = [];
 
   // (K, V) => (node, path to node from start)
@@ -45,7 +55,7 @@ export function aStar(
       return [dict[key(node)], visitedInOrder];
     }
 
-    let neighbors = utils.getNeighbors(grid, node, diag);
+    let neighbors = getNeighbors(grid, node, diag);
     for (let i = 0; i < neighbors.length; i++) {
       let neighbor = neighbors[i];
 
@@ -53,8 +63,12 @@ export function aStar(
         continue;
       }
 
-      // 1 for no diagonal, 1.4 for diagonal
-      let newDistance = node.distance + diag? 1 : 1.4;
+      // 1 for no diagonal, SQRT2 for diagonal
+      let travelDistance =
+        neighbor.row - node.row === 0 || neighbor.col - node.col === 0
+          ? 1
+          : Math.SQRT2;
+      let newDistance = node.distance + travelDistance;
 
       // if not processed or should be updated
       if (!neighbor.opened || newDistance < neighbor.distance) {
