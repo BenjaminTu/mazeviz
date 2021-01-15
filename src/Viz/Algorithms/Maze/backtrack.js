@@ -1,7 +1,13 @@
 import { Type, directionsNoDiag, shuffle } from "../utilities";
 
-// maze generator with recursive bcktracking
-export function backtrack(grid, node, pathNodesInOrder) {
+// maze generator with recursive backtracking
+export function backtrack(grid, start) {
+  let pathNodesInOrder = []
+  backtrackHelper(grid, start, pathNodesInOrder);
+  return pathNodesInOrder;
+}
+
+function backtrackHelper(grid, node, pathNodesInOrder) {
   const rows = grid.length;
   const cols = grid[0].length;
 
@@ -26,30 +32,18 @@ export function backtrack(grid, node, pathNodesInOrder) {
       grid[newRow][newCol] !== Type.Goal &&
       !grid[newRow][newCol].visited
     ) {
-      /* visual illustration (n for next node, p for path, w for wall)
-       * w w w w
-       * w n w w
-       * w p w w
-       * w p w w
-       *
-       * // next iteration
-       *
-       * w w w w
-       * w p p n
-       * w p w w
-       * w p w w
-       */
 
-      // midpoint of current node nad next node
+      // midpoint of current node and next node
       let dirRow = Math.floor((newRow + node.row) / 2);
       let dirCol = Math.floor((newCol + node.col) / 2);
 
       // add cells to path
       pathNodesInOrder.push(node);
       pathNodesInOrder.push(grid[dirRow][dirCol]);
+      pathNodesInOrder.push(grid[newRow][newCol]);
 
       // backtrack
-      backtrack(grid, grid[newRow][newCol], pathNodesInOrder);
+      backtrackHelper(grid, grid[newRow][newCol], pathNodesInOrder);
     }
   }
 

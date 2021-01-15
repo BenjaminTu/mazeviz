@@ -29,8 +29,6 @@ export function aStar(grid, start, goal, diag, heuristic) {
     return "".concat(node.row, " ", node.col);
   }
 
-  console.log(heuristic);
-
   var open = new PriorityQueue((a, b) => {
     return a.f - b.f;
   });

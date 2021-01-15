@@ -28,7 +28,7 @@
 
 .visited {
   background-color: paleturquoise;
-  animation: fade 0.3s;
+  animation: fade 0.5s;
 }
 
 @keyframes zoom {
@@ -42,13 +42,10 @@
 
 @keyframes fade {
   0% {
-    background-color: rgb(107, 119, 146);
-  }
-  25% {
-    background-color: rgb(126, 202, 202);
+    background-color: rgb(12, 136, 88);
   }
   50% {
-    background-color: rgb(109, 201, 201);
+    background-color: rgb(69, 214, 214);
   }
   100% {
     background-color: paleturquoise;

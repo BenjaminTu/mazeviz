@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import Node from "./Node/Node";
 import { Type } from "./Algorithms/utilities";
-import { Algo } from "./Algorithms/PathFinding/algorithms";
-import { backtrack } from "./Algorithms/Maze/backtrack";
+import { PathAlgo } from "./Algorithms/PathFinding/algorithms";
+import { MazeAlgo } from "./Algorithms/Maze/algorithms";
 
 import "./Viz.css";
 
@@ -12,7 +12,7 @@ const INITIAL_ROWS = 27;
 const INITIAL_COLS = 51;
 
 const INITIAL_START = { r: 10, c: 10 };
-const INITIAL_GOAL = { r: 10, c: 43 };
+const INITIAL_GOAL = { r: 10, c: 41 };
 
 const ANIMATION_SPEED = 20;
 
@@ -25,8 +25,9 @@ export default class Viz extends Component {
       goal: INITIAL_GOAL,
       grid: this.initGrid(INITIAL_ROWS, INITIAL_COLS),
 
-      // current pathfinding algorithm
+      // current algorithm
       pathAlgo: "---",
+      mazeAlgo: "---",
 
       // diagonal movement
       diag: false,
@@ -118,10 +119,10 @@ export default class Viz extends Component {
         // clear visited cache
         if (curType === Type.Visited || curType === Type.Path) {
           this.setNodeType(r, c, Type.Empty);
-        } else if (curType === Type.Wall) {
-          // prevent from reverting to types from previous search
-          grid[r][c].prevNodeType = Type.Empty;
         }
+
+        // prevent from reverting to types from previous search
+        grid[r][c].prevNodeType = Type.Empty;
       }
     }
 
@@ -263,7 +264,7 @@ export default class Viz extends Component {
   setPathAlgo(event) {
     let mode = event.target.value;
 
-    if (!(mode in Algo)) {
+    if (!(mode in PathAlgo)) {
       // not a valid algorithm
       return;
     }
@@ -278,7 +279,7 @@ export default class Viz extends Component {
     this.clearCache();
 
     // perform search
-    const [path, visitedInOrder] = Algo[pathAlgo](
+    const [path, visitedInOrder] = PathAlgo[pathAlgo](
       grid,
       grid[start.r][start.c],
       grid[goal.r][goal.c],
@@ -294,6 +295,11 @@ export default class Viz extends Component {
     for (let i = 0; i < nodesToAnimate.length; i++) {
       let node = nodesToAnimate[i];
       if (node.nodeType === Type.Start || node.nodeType === Type.Goal) {
+        if (node.nodeType === Type.Start && nodesToAnimate.length === visitedInOrder.length) {
+          // no path found
+          node.prevNodeType = Type.Visited;
+          continue;
+        }
         // set start/goal nodes previous type to path for indicate path when moving start/goal
         node.prevNodeType = Type.Path;
         continue;
@@ -316,12 +322,22 @@ export default class Viz extends Component {
 
   /* Maze Functions */
 
+  // set maze generation algorithm
+  setMazeAlgo(event) {
+    let mode = event.target.value;
+
+    if (!(mode in MazeAlgo)) {
+      // not a valid algorithm
+      return;
+    }
+    this.setState({ mazeAlgo: mode });
+  }
+
   // animate maze generation
   generateMaze() {
-    const { grid, start, animationSpeed } = this.state;
+    const { grid, start, animationSpeed, mazeAlgo } = this.state;
 
-    let pathNodesInOrder = [];
-    backtrack(grid, grid[start.r][start.c], pathNodesInOrder);
+    let pathNodesInOrder = MazeAlgo[mazeAlgo](grid, grid[start.r][start.c]);
 
     // clear all cache
     this.clearCache();
@@ -376,14 +392,21 @@ export default class Viz extends Component {
             onChange={(e) => this.setDiag(e)}
           ></input>
           <label htmlFor="checkbox">Allow Diagonal Movements</label>
-          <select id="select" onChange={(e) => this.setPathAlgo(e)}>
-            {Object.keys(Algo).map((option, index) => (
+          <select id="path" onChange={(e) => this.setPathAlgo(e)}>
+            {Object.keys(PathAlgo).map((option, index) => (
               <option key={index} value={option}>
                 {option}
               </option>
             ))}
           </select>
           <button onClick={() => this.animateSearch()}>Start Search</button>
+          <select id="maze" onChange={(e) => this.setMazeAlgo(e)}>
+            {Object.keys(MazeAlgo).map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
           <button onClick={() => this.generateMaze()}>Generate Maze</button>
         </div>
 

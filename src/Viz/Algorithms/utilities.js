@@ -188,3 +188,55 @@ export class PriorityQueue {
     }
   }
 }
+
+// A custom data structure for union find
+export class DisjointSet {
+  constructor(numOfItems) {
+    // parent array
+    this.sets = new Array(numOfItems);
+    // size array
+    this.sizes = new Array(numOfItems);
+
+    for (let i = 0; i < numOfItems; i++) {
+      this.sets[i] = i;
+      this.sizes[i] = 1;
+    }
+  }
+
+  // merge two items' sets together
+  union(itemA, itemB) {
+    let rootA = this._getRoot(itemA);
+    let rootB = this._getRoot(itemB);
+
+    if (rootA === rootB) {
+      return;
+    }
+
+    if (this.sizes[rootA] < this.sizes[rootB]) {
+      // make rootA a subTree of rootB
+      this.sets[rootA] = rootB;
+      this.sizes[rootB] += this.sizes[rootA];
+    } else {
+      // make rootB a subTree of rootA
+      this.sets[rootB] = rootA;
+      this.sizes[rootA] += this.sizes[rootB];
+    }
+
+  }
+
+  // return if two items are in the same set
+  find(itemA, itemB) {
+    return this._getRoot(itemA) === this._getRoot(itemB);
+  }
+
+  // get root of current item
+  _getRoot(item) {
+    let index = item;
+    // while not the root of item (root of root is itself)
+    while (this.sets[index] !== index) {
+      index = this.sets[index];
+    }
+
+    return index;
+  }
+}
