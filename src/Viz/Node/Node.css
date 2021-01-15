@@ -3,7 +3,7 @@
   -webkit-user-drag: none;
   -webkit-app-region: no-drag;
   cursor: default;
-  }
+}
 
 .node {
   width: 24px;

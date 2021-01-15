@@ -383,7 +383,7 @@ export default class Viz extends Component {
         let curType = grid[r][c].nodeType;
         if (curType !== Type.Start && curType !== Type.Goal) {
           // Walls with no zoom effect
-          this.setNodeType(r, c, "wall-still");
+          this.setNodeType(r, c, Type.Wall);
         }
       }
     }
