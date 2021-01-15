@@ -14,6 +14,8 @@ export default class Node extends Component {
 
     return (
       <div
+        // prevent from dragging
+        draggable="false"
         // render by type
         className={"node".concat(" ", nodeType).trim()}
         // mouse event functions

@@ -5,13 +5,17 @@
   display: inline-block;
 }
 
-/* .node:hover {
-  transform: scale(0.8);
-} */
+.node:hover {
+  transform: scale(1.2);
+}
 
 .wall {
   background-color: rgb(38, 87, 143);
-  /* animation: zoom 0.1s; */
+  animation: zoom 0.3s;
+}
+
+.wall-still {
+  background-color: rgb(38, 87, 143);
 }
 
 .start {
@@ -42,10 +46,10 @@
 
 @keyframes fade {
   0% {
-    background-color: rgb(12, 136, 88);
+    background-color: rgb(21, 168, 112);
   }
   50% {
-    background-color: rgb(69, 214, 214);
+    background-color: rgb(58, 204, 184);
   }
   100% {
     background-color: paleturquoise;

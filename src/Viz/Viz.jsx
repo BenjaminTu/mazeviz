@@ -243,14 +243,14 @@ export default class Viz extends Component {
 
   // disable all inputs
   disableInput() {
-    var elements = document.querySelectorAll("button, input");
+    var elements = document.querySelectorAll("button");
     elements.forEach((element) => (element.disabled = true));
     this.setState({ disabled: true });
   }
 
   // enable all inputs
   enableInput() {
-    var elements = document.querySelectorAll("button, input");
+    var elements = document.querySelectorAll("button");
     elements.forEach((element) => (element.disabled = false));
     this.setState({ disabled: false });
   }
@@ -271,12 +271,29 @@ export default class Viz extends Component {
     this.setState({ pathAlgo: mode });
   }
 
+  // calculate path length
+  getPathLength(path) {
+    let length = 0;
+    for (let i = 0; i < path.length - 1; i++) {
+      let curNode = path[i];
+      let nextNode = path[i + 1];
+      let dx = Math.abs(curNode.row - nextNode.row);
+      let dy = Math.abs(curNode.col - nextNode.col);
+
+      length += dx === 0 || dy === 0 ? 1 : Math.SQRT2;
+    }
+
+    return length;
+  }
+
   // animate pathfinding algorithms
   animateSearch() {
     const { grid, start, goal, pathAlgo, diag, animationSpeed } = this.state;
 
     // clear cache
     this.clearCache();
+
+    let t0 = performance.now();
 
     // perform search
     const [path, visitedInOrder] = PathAlgo[pathAlgo](
@@ -285,6 +302,13 @@ export default class Viz extends Component {
       grid[goal.r][goal.c],
       diag
     );
+
+    let executionTime = performance.now() - t0;
+    console.log(executionTime);
+
+    // get path length
+    let length = this.getPathLength(path);
+    console.log(length);
 
     // disable input during animation
     this.disableInput();
@@ -295,7 +319,10 @@ export default class Viz extends Component {
     for (let i = 0; i < nodesToAnimate.length; i++) {
       let node = nodesToAnimate[i];
       if (node.nodeType === Type.Start || node.nodeType === Type.Goal) {
-        if (node.nodeType === Type.Start && nodesToAnimate.length === visitedInOrder.length) {
+        if (
+          node.nodeType === Type.Start &&
+          nodesToAnimate.length === visitedInOrder.length
+        ) {
           // no path found
           node.prevNodeType = Type.Visited;
           continue;
@@ -337,7 +364,12 @@ export default class Viz extends Component {
   generateMaze() {
     const { grid, start, animationSpeed, mazeAlgo } = this.state;
 
+    let t0 = performance.now();
+
     let pathNodesInOrder = MazeAlgo[mazeAlgo](grid, grid[start.r][start.c]);
+
+    let executionTime = performance.now() - t0;
+    console.log(executionTime);
 
     // clear all cache
     this.clearCache();
@@ -350,7 +382,8 @@ export default class Viz extends Component {
       for (let c = 0; c < grid[0].length; c++) {
         let curType = grid[r][c].nodeType;
         if (curType !== Type.Start && curType !== Type.Goal) {
-          this.setNodeType(r, c, Type.Wall);
+          // Walls with no zoom effect
+          this.setNodeType(r, c, "wall-still");
         }
       }
     }
