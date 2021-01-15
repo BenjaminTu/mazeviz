@@ -9,8 +9,8 @@ export function kruskal(grid, start) {
 
   let edges = [];
 
-  for (let i = 1; i < rows - 1; i += 2) {
-    for (let j = 1; j < cols - 1; j += 2) {
+  for (let i = 0; i < rows; i += 2) {
+    for (let j = 0; j < cols; j += 2) {
       // vertical path (2 rows below)
       edges.push([i, j, [2, 0]]);
       // horizontal path (2 cols to the right)
@@ -51,11 +51,7 @@ export function kruskal(grid, start) {
       // push maze node
       pathNodesInOrder.push(grid[row][col]);
       pathNodesInOrder.push(grid[dirRow][dirCol]);
-
-      // prevent from node going on boundary
-      if (newRow < rows - 1 && newCol < cols - 1) {
-        pathNodesInOrder.push(grid[newRow][newCol]);
-      }
+      pathNodesInOrder.push(grid[newRow][newCol]);
     }
   }
 
