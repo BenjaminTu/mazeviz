@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/mazeviz/static/css/main.f7c127ae.chunk.css",
+    "main.css": "/mazeviz/static/css/main.d705bb99.chunk.css",
     "main.js": "/mazeviz/static/js/main.6c2684d6.chunk.js",
     "main.js.map": "/mazeviz/static/js/main.6c2684d6.chunk.js.map",
     "runtime-main.js": "/mazeviz/static/js/runtime-main.0b7f80cb.js",
@@ -10,13 +10,13 @@
     "static/js/3.0a3d9f84.chunk.js": "/mazeviz/static/js/3.0a3d9f84.chunk.js",
     "static/js/3.0a3d9f84.chunk.js.map": "/mazeviz/static/js/3.0a3d9f84.chunk.js.map",
     "index.html": "/mazeviz/index.html",
-    "static/css/main.f7c127ae.chunk.css.map": "/mazeviz/static/css/main.f7c127ae.chunk.css.map",
+    "static/css/main.d705bb99.chunk.css.map": "/mazeviz/static/css/main.d705bb99.chunk.css.map",
     "static/js/2.86dafa71.chunk.js.LICENSE.txt": "/mazeviz/static/js/2.86dafa71.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.0b7f80cb.js",
     "static/js/2.86dafa71.chunk.js",
-    "static/css/main.f7c127ae.chunk.css",
+    "static/css/main.d705bb99.chunk.css",
     "static/js/main.6c2684d6.chunk.js"
   ]
 }
