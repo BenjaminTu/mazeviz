@@ -9,7 +9,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 // Constants
 
-const INITIAL_ROWS = 27;
+const INITIAL_ROWS = 29;
 const INITIAL_COLS = 57;
 
 const INITIAL_START = { r: 10, c: 10 };
