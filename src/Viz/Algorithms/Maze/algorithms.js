@@ -6,6 +6,6 @@ export const MazeAlgo = {
   "---": function init() {
     return [];
   },
-  "Recursive Backtracking": backtrack,
-  "Kruskal": kruskal,
+  "Recursive Backtracker": backtrack,
+  "Kruskal's": kruskal,
 };

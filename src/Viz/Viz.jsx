@@ -476,59 +476,59 @@ export default class Viz extends Component {
       <>
         <div className="panel">
           <div className="title">
-            <div className="float-left d-block">
-              <h1 className="display-4">Maze</h1>
-            </div>
-            <div className="float-left d-block">
-              <h1 className="display-4">Viz</h1>
-            </div>
+            <p className="h1">MazeViz</p>
           </div>
 
           <div className="left">
+            <small className="path-title">Pathfinding Algorithm:</small>
+            <div className="top">
+              <select
+                id="path"
+                className="d-block m-2"
+                onChange={(e) => this.setPathAlgo(e)}
+              >
+                {Object.keys(PathAlgo).map((option, index) => (
+                  <option key={index} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="bot">
+              <label className="mr-2">
+                <input
+                  type="checkbox"
+                  className="checkbox mr-1"
+                  onChange={(e) => this.setDiag(e)}
+                ></input>
+                Allow Diagonal Movement
+              </label>
+            </div>
+            <div className="rt">
+              <button
+                id="path-button"
+                className="btn btn-sm btn-success"
+                onClick={() => this.animateSearch()}
+              >
+                Search Path
+              </button>
+            </div>
+          </div>
+
+          <div className="middle">
             <button
               id="clear-button"
-              className="btn btn-sm btn-primary d-block"
+              className="btn btn btn-primary d-block"
               onClick={() => this.clearBoard()}
             >
               Clear Board
             </button>
           </div>
 
-          <div className="middle">
-            <select
-              id="path"
-              className="d-block"
-              onChange={(e) => this.setPathAlgo(e)}
-            >
-              {Object.keys(PathAlgo).map((option, index) => (
-                <option key={index} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-
-            <label className="p d-block">
-              <input
-                type="checkbox"
-                className="checkbox"
-                onChange={(e) => this.setDiag(e)}
-              ></input>
-              Allow Diagonal Movement
-            </label>
-
-            <button
-              id="path-button"
-              className="btn btn-sm btn-success d-block"
-              onClick={() => this.animateSearch()}
-            >
-              Start Search
-            </button>
-          </div>
-
           <div className="right">
             <select
               id="maze"
-              className="d-block"
+              className="mr-2"
               onChange={(e) => this.setMazeAlgo(e)}
             >
               {Object.keys(MazeAlgo).map((option, index) => (
@@ -540,7 +540,7 @@ export default class Viz extends Component {
 
             <button
               id="maze-button"
-              className="btn btn-sm btn-success d-block"
+              className="btn btn-sm btn-success"
               onClick={() => this.generateMaze()}
             >
               Generate Maze
