@@ -29,6 +29,10 @@ export default class Viz extends Component {
       pathAlgo: "---",
       mazeAlgo: "---",
 
+      // algorithm stats
+      pathLength: 0,
+      time: 0,
+
       // diagonal movement
       diag: false,
 
@@ -42,9 +46,11 @@ export default class Viz extends Component {
     };
   }
 
-  // Tab Name
+  // Init Mount (Tab Name, Disable Button) 
   componentDidMount() {
     document.title = "Path Visualizer";
+    document.getElementById('path-button').disabled = true;
+    document.getElementById('maze-button').disabled = true;
   }
 
   /* Grid Functions */
@@ -250,8 +256,19 @@ export default class Viz extends Component {
 
   // enable all inputs
   enableInput() {
-    var elements = document.querySelectorAll("button");
-    elements.forEach((element) => (element.disabled = false));
+    const {pathAlgo, mazeAlgo} = this.state;
+
+    // enable if not default mode
+    if (pathAlgo !== '---') {
+      document.getElementById('path-button').disabled = false;
+    }
+
+    // enable if not default mode
+    if (mazeAlgo !== '---') {
+      document.getElementById('maze-button').disabled = false;
+    }
+
+    document.getElementById('clear-button').disabled = false;
     this.setState({ disabled: false });
   }
 
@@ -268,6 +285,14 @@ export default class Viz extends Component {
       // not a valid algorithm
       return;
     }
+
+    // disable button if default option
+    if (mode === '---') {
+      document.getElementById('path-button').disabled = true;
+    } else {
+      document.getElementById('path-button').disabled = false;
+    }
+
     this.setState({ pathAlgo: mode });
   }
 
@@ -284,6 +309,16 @@ export default class Viz extends Component {
     }
 
     return length;
+  }
+
+  // display stats
+  displayStats(length, time) {
+    this.setState({ pathLength: length, time: time });
+
+    document.getElementById("length").className =
+      length === 0 ? "hide" : "show";
+
+    document.getElementById("time").className = time === 0 ? "hide" : "show";
   }
 
   // animate pathfinding algorithms
@@ -303,12 +338,14 @@ export default class Viz extends Component {
       diag
     );
 
+    // get execution time
     let executionTime = performance.now() - t0;
-    console.log(executionTime);
 
     // get path length
     let length = this.getPathLength(path);
-    console.log(length);
+
+    // display stats
+    this.displayStats(length, executionTime);
 
     // disable input during animation
     this.disableInput();
@@ -357,6 +394,14 @@ export default class Viz extends Component {
       // not a valid algorithm
       return;
     }
+
+    // disable button if default option
+    if (mode === '---') {
+      document.getElementById('maze-button').disabled = true;
+    } else {
+      document.getElementById('maze-button').disabled = false;
+    }
+
     this.setState({ mazeAlgo: mode });
   }
 
@@ -369,7 +414,8 @@ export default class Viz extends Component {
     let pathNodesInOrder = MazeAlgo[mazeAlgo](grid, grid[start.r][start.c]);
 
     let executionTime = performance.now() - t0;
-    console.log(executionTime);
+
+    this.displayStats(0, executionTime);
 
     // clear all cache
     this.clearCache();
@@ -413,18 +459,21 @@ export default class Viz extends Component {
   /* Render */
 
   render() {
-    const { grid } = this.state;
+    const { grid, pathLength, time } = this.state;
 
     return (
       <>
         <div className="panel">
-          <button onClick={() => this.clearBoard()}> Clear Board </button>
+          <button id="clear-button" onClick={() => this.clearBoard()}> Clear Board </button>
+
           <input
             type="checkbox"
             id="checkbox"
             onChange={(e) => this.setDiag(e)}
           ></input>
+
           <label htmlFor="checkbox">Allow Diagonal Movements</label>
+
           <select id="path" onChange={(e) => this.setPathAlgo(e)}>
             {Object.keys(PathAlgo).map((option, index) => (
               <option key={index} value={option}>
@@ -432,7 +481,9 @@ export default class Viz extends Component {
               </option>
             ))}
           </select>
-          <button onClick={() => this.animateSearch()}>Start Search</button>
+
+          <button id="path-button" onClick={() => this.animateSearch()}>Start Search</button>
+
           <select id="maze" onChange={(e) => this.setMazeAlgo(e)}>
             {Object.keys(MazeAlgo).map((option, index) => (
               <option key={index} value={option}>
@@ -440,7 +491,15 @@ export default class Viz extends Component {
               </option>
             ))}
           </select>
-          <button onClick={() => this.generateMaze()}>Generate Maze</button>
+
+          <button id="maze-button" onClick={() => this.generateMaze()}>Generate Maze</button>
+
+          <p id="length" className="hide">
+            Length is {pathLength.toFixed(2)} unit
+          </p>
+          <p id="time" className="hide">
+            Time is {time.toFixed(2)} ms
+          </p>
         </div>
 
         <div className="grid">
