@@ -1,4 +1,7 @@
-*, *::after, *::before {
+/* prevent node from being draggable in electron apps */
+*,
+*::after,
+*::before {
   -webkit-user-select: none;
   -webkit-user-drag: none;
   -webkit-app-region: no-drag;
@@ -18,7 +21,7 @@
 
 .wall {
   background-color: rgb(38, 87, 143);
-  animation: zoom 0.3s;
+  /* animation: zoom 0.3s; */
 }
 
 .wall-still {
