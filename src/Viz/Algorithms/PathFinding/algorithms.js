@@ -4,10 +4,7 @@ import { dijkstra } from "./dijkstra.js";
 import { aStar } from "./aStar";
 
 // Pathfinding algorithm selector
-export const PathAlgo = {
-  "---": function init() {
-    return [[], []];
-  },
+export const PATH_ALGO = {
   "A*": aStar,
   "BFS": bfs,
   "DFS": dfs,

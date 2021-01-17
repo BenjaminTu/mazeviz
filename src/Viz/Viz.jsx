@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import Node from "./Node/Node";
 import { Type } from "./Algorithms/utilities";
-import { PathAlgo } from "./Algorithms/PathFinding/algorithms";
-import { MazeAlgo } from "./Algorithms/Maze/algorithms";
+import { PATH_ALGO } from "./Algorithms/PathFinding/algorithms";
+import { MAZE_ALGO } from "./Algorithms/Maze/algorithms";
 
 import "./Viz.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -13,9 +13,15 @@ const INITIAL_ROWS = 29;
 const INITIAL_COLS = 57;
 
 const INITIAL_START = { r: 10, c: 10 };
-const INITIAL_GOAL = { r: 10, c: 43 };
+const INITIAL_GOAL = { r: 10, c: 46 };
 
-const ANIMATION_SPEED = 20;
+const ANIMATION_SPEED = {
+  "0.5x": 96,
+  "1x": 48,
+  "1.5x": 36,
+  "2x": 24,
+  Instant: 0,
+};
 
 export default class Viz extends Component {
   constructor(props) {
@@ -27,8 +33,8 @@ export default class Viz extends Component {
       grid: this.initGrid(INITIAL_ROWS, INITIAL_COLS),
 
       // current algorithm
-      pathAlgo: "---",
-      mazeAlgo: "---",
+      pathAlgo: "",
+      mazeAlgo: "",
 
       // algorithm stats
       pathLength: 0,
@@ -43,7 +49,7 @@ export default class Viz extends Component {
       mouseIsPressed: false,
 
       // current animation speed
-      animationSpeed: ANIMATION_SPEED,
+      animationSpeed: ANIMATION_SPEED["1x"],
     };
   }
 
@@ -251,11 +257,10 @@ export default class Viz extends Component {
 
   /* Pathfinding Algorithm Functions */
 
-  // TODO: make select not enable button during animation
   // disable all inputs
   disableInput() {
     // disable selects and button
-    var elements = document.querySelectorAll("button, select");
+    var elements = document.querySelectorAll("button");
     elements.forEach((element) => (element.disabled = true));
     this.setState({ disabled: true });
   }
@@ -276,9 +281,6 @@ export default class Viz extends Component {
 
     document.getElementById("clear-button").disabled = false;
 
-    // enable select
-    var selects = document.querySelectorAll("button, select");
-    selects.forEach((element) => (element.disabled = false));
     this.setState({ disabled: false });
   }
 
@@ -289,17 +291,16 @@ export default class Viz extends Component {
 
   // set pathfinding algorithm
   setPathAlgo(event) {
+    const { disabled } = this.state;
     let mode = event.target.value;
 
-    if (!(mode in PathAlgo)) {
+    if (!(mode in PATH_ALGO)) {
       // not a valid algorithm
       return;
     }
 
-    // disable button if default option
-    if (mode === "---") {
-      document.getElementById("path-button").disabled = true;
-    } else {
+    // enable button if not default option or during animation
+    if (!disabled && mode !== "---") {
       document.getElementById("path-button").disabled = false;
     }
 
@@ -341,7 +342,7 @@ export default class Viz extends Component {
     let t0 = performance.now();
 
     // perform search
-    const [path, visitedInOrder] = PathAlgo[pathAlgo](
+    const [path, visitedInOrder] = PATH_ALGO[pathAlgo](
       grid,
       grid[start.r][start.c],
       grid[goal.r][goal.c],
@@ -380,12 +381,17 @@ export default class Viz extends Component {
       }
 
       let assignType = i < visitedInOrder.length ? Type.Visited : Type.Path;
-      setTimeout(() => {
-        node.nodeType = assignType;
 
-        // set state for new render (force animation)
-        this.setState({ grid });
-      }, animationSpeed * i);
+      // setTimeout does not work with 0ms
+      if (animationSpeed !== 0) {
+        setTimeout(() => {
+          node.nodeType = assignType;
+          // set state for new render (force animation)
+          this.setState({ grid });
+        }, animationSpeed * i);
+      } else {
+        node.nodeType = assignType;
+      }
     }
 
     // enable input after animation
@@ -398,17 +404,16 @@ export default class Viz extends Component {
 
   // set maze generation algorithm
   setMazeAlgo(event) {
+    const { disabled } = this.state;
     let mode = event.target.value;
 
-    if (!(mode in MazeAlgo)) {
+    if (!(mode in MAZE_ALGO)) {
       // not a valid algorithm
       return;
     }
 
-    // disable button if default option
-    if (mode === "---") {
-      document.getElementById("maze-button").disabled = true;
-    } else {
+    // enable button if not default option or during animation
+    if (!disabled && mode !== "---") {
       document.getElementById("maze-button").disabled = false;
     }
 
@@ -421,7 +426,7 @@ export default class Viz extends Component {
 
     let t0 = performance.now();
 
-    let pathNodesInOrder = MazeAlgo[mazeAlgo](grid, grid[start.r][start.c]);
+    let pathNodesInOrder = MAZE_ALGO[mazeAlgo](grid, grid[start.r][start.c]);
 
     let executionTime = performance.now() - t0;
 
@@ -453,20 +458,39 @@ export default class Viz extends Component {
       if (node.nodeType === Type.Start || node.nodeType === Type.Goal) {
         continue;
       }
-      setTimeout(() => {
+      
+      // setTimeout does not work with 0ms
+      if (animationSpeed !== 0) {
+        setTimeout(() => {
+          node.nodeType = Type.Empty;
+          // set state for new render (force animation)
+          this.setState({ grid });
+        }, animationSpeed * i);
+      } else {
         node.nodeType = Type.Empty;
-        // set state for new render (force animation)
-        this.setState({ grid });
-      }, animationSpeed * i);
+      }
     }
 
     // enable input after animation
     setTimeout(() => {
       this.enableInput();
     }, animationSpeed * pathNodesInOrder.length);
+
+    this.setState({ grid });
   }
 
-  // TODO: animation knob, display draggable stats
+  // set animation speed
+  setAnimationSpeed(event) {
+    let speed = event.target.value;
+
+    if (!(speed in ANIMATION_SPEED)) {
+      // not a valid algorithm
+      return;
+    }
+    console.log(speed);
+    this.setState({ animationSpeed: ANIMATION_SPEED[speed] });
+  }
+
   /* Render */
 
   render() {
@@ -477,45 +501,48 @@ export default class Viz extends Component {
         <div className="panel">
           <div className="title">
             <p className="h1">MazeViz</p>
+            <footer>
+              Project Hosted on
+              <a href="https://github.com/BenjaminTu/mazeviz"> Github</a>
+            </footer>
           </div>
 
           <div className="left">
             <small className="path-title">Pathfinding Algorithm:</small>
-            <div className="top">
-              <select
-                id="path"
-                className="d-block m-2"
-                onChange={(e) => this.setPathAlgo(e)}
-              >
-                {Object.keys(PathAlgo).map((option, index) => (
-                  <option key={index} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="bot">
-              <label className="mr-2">
-                <input
-                  type="checkbox"
-                  className="checkbox mr-1"
-                  onChange={(e) => this.setDiag(e)}
-                ></input>
-                Allow Diagonal Movement
-              </label>
-            </div>
-            <div className="rt">
-              <button
-                id="path-button"
-                className="btn btn-sm btn-success"
-                onClick={() => this.animateSearch()}
-              >
-                Search Path
-              </button>
-            </div>
+            <select
+              id="path"
+              className="d-block m-2 top"
+              onChange={(e) => this.setPathAlgo(e)}
+            >
+              <option selected disabled>
+                ---
+              </option>
+              {Object.keys(PATH_ALGO).map((option, index) => (
+                <option key={index} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+
+            <label className="bot">
+              <input
+                type="checkbox"
+                className="checkbox mr-1"
+                onChange={(e) => this.setDiag(e)}
+              ></input>
+              Allow Diagonal Movement
+            </label>
+
+            <button
+              id="path-button"
+              className="btn btn-sm btn-success rt"
+              onClick={() => this.animateSearch()}
+            >
+              Search Path
+            </button>
           </div>
 
-          <div className="middle">
+          <div className="right">
             <button
               id="clear-button"
               className="btn btn btn-primary d-block"
@@ -525,13 +552,17 @@ export default class Viz extends Component {
             </button>
           </div>
 
-          <div className="right">
+          <div className="middle">
+            <small className="path-title">Maze Generation Algorithm:</small>
             <select
               id="maze"
-              className="mr-2"
+              className="lt"
               onChange={(e) => this.setMazeAlgo(e)}
             >
-              {Object.keys(MazeAlgo).map((option, index) => (
+              <option selected disabled>
+                ---
+              </option>
+              {Object.keys(MAZE_ALGO).map((option, index) => (
                 <option key={index} value={option}>
                   {option}
                 </option>
@@ -540,20 +571,35 @@ export default class Viz extends Component {
 
             <button
               id="maze-button"
-              className="btn btn-sm btn-success"
+              className="btn btn-sm btn-success ml-2 rtrt"
               onClick={() => this.generateMaze()}
             >
               Generate Maze
             </button>
           </div>
 
+          <div className="knob">
+            <small>Speed:</small>
+            <select className="lt" onChange={(e) => this.setAnimationSpeed(e)}>
+              {Object.keys(ANIMATION_SPEED).map((option, index) => (
+                <option key={index} value={option} selected={option==="1x"}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div className="stats">
-            <p id="length" className="h6 hide">
-              path length: {pathLength.toFixed(2)} unit
-            </p>
-            <p id="time" className="h6 hide">
-              time taken: {time.toFixed(2)} ms
-            </p>
+            <small className="show">Algorithm Stats:</small>
+            <div className="stats-panel">
+              <small id="length" className="h6 hide">
+                path length: {pathLength.toFixed(2)} unit
+              </small>
+              <br></br>
+              <small id="time" className="h6 hide">
+                time taken: {time.toFixed(2)} ms
+              </small>
+            </div>
           </div>
         </div>
 
