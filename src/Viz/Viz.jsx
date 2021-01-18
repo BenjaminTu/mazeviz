@@ -535,7 +535,7 @@ export default class Viz extends Component {
 
             <button
               id="path-button"
-              className="btn btn-sm btn-success rt"
+              className="btn btn-sm btn-success m-2 rt"
               onClick={() => this.animateSearch()}
             >
               Search Path
@@ -545,7 +545,7 @@ export default class Viz extends Component {
           <div className="right">
             <button
               id="clear-button"
-              className="btn btn btn-primary d-block"
+              className="btn btn btn-primary d-block m-2"
               onClick={() => this.clearBoard()}
             >
               Clear Board
@@ -571,7 +571,7 @@ export default class Viz extends Component {
 
             <button
               id="maze-button"
-              className="btn btn-sm btn-success ml-2 rtrt"
+              className="btn btn-sm btn-success m-2 rtrt"
               onClick={() => this.generateMaze()}
             >
               Generate Maze
@@ -580,7 +580,7 @@ export default class Viz extends Component {
 
           <div className="knob">
             <small>Speed:</small>
-            <select className="lt" onChange={(e) => this.setAnimationSpeed(e)}>
+            <select className="m-2 lt" onChange={(e) => this.setAnimationSpeed(e)}>
               {Object.keys(ANIMATION_SPEED).map((option, index) => (
                 <option key={index} value={option} selected={option === "1x"}>
                   {option}
@@ -590,7 +590,7 @@ export default class Viz extends Component {
           </div>
 
           <div className="stats">
-            <small className="show">Algorithm Stats:</small>
+            <small className="show m-2">Algorithm Stats:</small>
             <div className="stats-panel">
               <small id="length" className="h6 hide">
                 path length: {pathLength.toFixed(2)} unit
@@ -606,7 +606,7 @@ export default class Viz extends Component {
         <div className="flex-container grid">
           {grid.map((row, rowIdx) => {
             return (
-              <div key={rowIdx} className="flex-nowrap d-flex flex-row justify-content-center overflow-hidden">
+              <div key={rowIdx} className="flex-nowrap d-flex justify-content-center overflow-hidden">
                   {row.map((node, nodeIdx) => {
                     const { row, col, nodeType } = node;
                     return (
