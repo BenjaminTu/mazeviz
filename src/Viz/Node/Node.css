@@ -42,7 +42,7 @@
 
 .visited {
   background-color: paleturquoise;
-  animation: fade 0.5s;
+  animation: fade 0.3s;
 }
 
 @keyframes zoom {

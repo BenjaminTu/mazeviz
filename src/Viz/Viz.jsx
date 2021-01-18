@@ -33,8 +33,8 @@ export default class Viz extends Component {
       grid: this.initGrid(INITIAL_ROWS, INITIAL_COLS),
 
       // current algorithm
-      pathAlgo: "",
-      mazeAlgo: "",
+      pathAlgo: "---",
+      mazeAlgo: "---",
 
       // algorithm stats
       pathLength: 0,
