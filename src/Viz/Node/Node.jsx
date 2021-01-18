@@ -17,7 +17,7 @@ export default class Node extends Component {
         // prevent from dragging
         draggable="false"
         // render by type
-        className={"node".concat(" ", nodeType).trim()}
+        className={"flex-item node".concat(" ", nodeType).trim()}
         // mouse event functions
         onMouseDown={() => onMouseDown(row, col)}
         onMouseEnter={() => onMouseEnter(row, col)}

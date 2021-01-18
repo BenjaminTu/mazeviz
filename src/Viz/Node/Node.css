@@ -12,7 +12,7 @@
   width: 23px;
   height: 23px;
   border: 1px solid black;
-  display: inline-block;
+  overflow: hidden;
 }
 
 .node:hover {
@@ -26,13 +26,13 @@
 
 .start {
   background-image: url("../Icons/start.png");
-  background-size: 23px 23px;
+  background-size: cover;
   animation: zoom 0.5s;
 }
 
 .goal {
   background-image: url("../Icons/target.svg");
-  background-size: 21px 21px;
+  background-size: cover;
   animation: zoom 0.5s;
 }
 

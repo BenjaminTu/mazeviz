@@ -458,7 +458,7 @@ export default class Viz extends Component {
       if (node.nodeType === Type.Start || node.nodeType === Type.Goal) {
         continue;
       }
-      
+
       // setTimeout does not work with 0ms
       if (animationSpeed !== 0) {
         setTimeout(() => {
@@ -582,7 +582,7 @@ export default class Viz extends Component {
             <small>Speed:</small>
             <select className="lt" onChange={(e) => this.setAnimationSpeed(e)}>
               {Object.keys(ANIMATION_SPEED).map((option, index) => (
-                <option key={index} value={option} selected={option==="1x"}>
+                <option key={index} value={option} selected={option === "1x"}>
                   {option}
                 </option>
               ))}
@@ -603,26 +603,28 @@ export default class Viz extends Component {
           </div>
         </div>
 
-        <div className="grid">
+        <div className="flex-container grid">
           {grid.map((row, rowIdx) => {
             return (
-              <div key={rowIdx}>
-                {row.map((node, nodeIdx) => {
-                  const { row, col, nodeType } = node;
-                  return (
-                    <Node
-                      key={nodeIdx}
-                      row={row}
-                      col={col}
-                      nodeType={nodeType}
-                      onMouseDown={(row, col) => this.handleMouseDown(row, col)}
-                      onMouseEnter={(row, col) =>
-                        this.handleMouseEnter(row, col)
-                      }
-                      onMouseUp={() => this.handleMouseUp()}
-                    ></Node>
-                  );
-                })}
+              <div key={rowIdx} className="flex-nowrap d-flex flex-row justify-content-center overflow-hidden">
+                  {row.map((node, nodeIdx) => {
+                    const { row, col, nodeType } = node;
+                    return (
+                      <Node
+                        key={nodeIdx}
+                        row={row}
+                        col={col}
+                        nodeType={nodeType}
+                        onMouseDown={(row, col) =>
+                          this.handleMouseDown(row, col)
+                        }
+                        onMouseEnter={(row, col) =>
+                          this.handleMouseEnter(row, col)
+                        }
+                        onMouseUp={() => this.handleMouseUp()}
+                      ></Node>
+                    );
+                  })}
               </div>
             );
           })}
